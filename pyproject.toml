@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vigintiseptimal-latin"
+name = "vigintiseptimal_latin"
 version = "1.0.0"
 description = "A base-27 numeral system using the 26 letters of the latin alphabet"
 readme = "README.md"
@@ -15,7 +15,6 @@ authors = [
 keywords = ["base27", "numeration", "alphabet", "vigintiseptimal", "calculator", "math"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
 
