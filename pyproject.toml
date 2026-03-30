@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/clement/vigintiseptimal-latin"
+Homepage = "https://github.com/oxoSNAKEoxo/vigintiseptimal_latin"
 
 [project.scripts]
 vigintiseptimal = "vigintiseptimal_latin.core:main"
