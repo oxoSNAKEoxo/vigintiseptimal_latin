@@ -18,6 +18,9 @@ def letters_to_number(word: str) -> Fraction:
     if not word:
         raise ValueError("Empty input.")
 
+    if word.startswith('-'):
+        return -letters_to_number(word[1:])
+
     parts = word.split(SEPARATOR)
     if len(parts) > 2:
         raise ValueError(f"Multiple separators '{SEPARATOR}' found in '{word}'.")
@@ -117,8 +120,9 @@ def tokenize(expression: str):
 # ── Parser (recursive descent with precedence) ─────────────
 #
 #   expression = term (('+' | '-') term)*
-#   term       = power (('*' | '/' | '%') power)*
-#   power      = atom ('^' power)?                ← right-associative
+#   term       = unary (('*' | '/' | '%') unary)*
+#   unary      = ('-' | '+') unary | power
+#   power      = atom ('^' unary)?                 ← right-associative
 #   atom       = number | '(' expression ')'
 
 class Parser:
@@ -148,10 +152,10 @@ class Parser:
         return left
 
     def term(self):
-        left = self.power()
+        left = self.unary()
         while self.peek() in ('*', '/', '%'):
             op = self.consume()
-            right = self.power()
+            right = self.unary()
             if op == '*':
                 left = left * right
             elif op == '/':
@@ -164,11 +168,21 @@ class Parser:
                 left = left % right
         return left
 
+    def unary(self):
+        token = self.peek()
+        if token == '-':
+            self.consume()
+            return -self.unary()
+        if token == '+':
+            self.consume()
+            return self.unary()
+        return self.power()
+
     def power(self):
         base = self.atom()
         if self.peek() == '^':
             self.consume()
-            exponent = self.power()  # right-associative
+            exponent = self.unary()  # right-associative, allows c^-b
             if exponent.denominator != 1:
                 raise ValueError("Non-integer exponents are not supported.")
             exp = int(exponent)
@@ -179,12 +193,6 @@ class Parser:
 
     def atom(self):
         token = self.peek()
-        if token == '-':
-            self.consume()
-            return -self.atom()
-        if token == '+':
-            self.consume()
-            return self.atom()
         if token == '(':
             self.consume()
             result = self.expression()
