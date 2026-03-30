@@ -50,7 +50,7 @@ def number_to_letters(n: Fraction) -> str:
     Non-terminating fractions are truncated to DECIMAL_PRECISION digits.
     """
     if n < 0:
-        raise ValueError("Negative numbers are not supported.")
+        return '-' + number_to_letters(-n)
 
     integer = int(n)
     fractional = n - integer
@@ -171,11 +171,20 @@ class Parser:
             exponent = self.power()  # right-associative
             if exponent.denominator != 1:
                 raise ValueError("Non-integer exponents are not supported.")
-            return base ** int(exponent)
+            exp = int(exponent)
+            if exp < 0 and base == 0:
+                raise ValueError("Division by zero (0 raised to a negative power).")
+            return base ** exp
         return base
 
     def atom(self):
         token = self.peek()
+        if token == '-':
+            self.consume()
+            return -self.atom()
+        if token == '+':
+            self.consume()
+            return self.atom()
         if token == '(':
             self.consume()
             result = self.expression()
@@ -206,6 +215,8 @@ def vigintiseptimal_latin(expression: str) -> str:
         vigintiseptimal_latin("(a+b)*c")   → "i"       (a+b first)
         vigintiseptimal_latin("c^c")       → "a°"      (3^3 = 27)
         vigintiseptimal_latin("d/b")       → "b"       (4/2 = 2)
+        vigintiseptimal_latin("a-c")       → "-b"      (1-3 = -2)
+        vigintiseptimal_latin("-b+c")      → "a"       (-2+3 = 1)
     """
     expression = expression.strip().lower().replace(' ', '')
     tokens = tokenize(expression)

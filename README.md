@@ -59,6 +59,13 @@ vigintiseptimal "a+b*c"
 
 Precedence: `^` > `*`, `/`, `%` > `+`, `-`
 
+Negative numbers are prefixed with `-`:
+
+```python
+calc("a-c")    # "-b"   (1 - 3 = -2)
+calc("-b+c")   # "a"    (-2 + 3 = 1)
+```
+
 ## Precision
 
 Calculations use Python's `Fraction` for exact arithmetic — no floating-point errors.
